@@ -1,7 +1,9 @@
 package com.checkers;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -13,9 +15,12 @@ public class Checkers extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Checkers");
 
-        StackPane layout = new StackPane();
 
-        Scene scene = new Scene(layout, 300, 250);
+
+        Checkerboard board = new Checkerboard();
+
+        Scene scene = new Scene(board,Constants.squareSize*Constants.boardSize,Constants.squareSize*Constants.boardSize);
+
         primaryStage.setScene(scene);
         primaryStage.show();
     }
