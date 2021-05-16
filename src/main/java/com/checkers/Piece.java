@@ -29,25 +29,25 @@ public class Piece extends ImageView {
      */
     private void loadImages() {
         try {
-            FileInputStream input = new FileInputStream("C:\\Users\\jacka\\IdeaProjects\\Checkers\\images\\blackpiece.png");
+            FileInputStream input = new FileInputStream("images\\blackpiece.png");
             blackPiece = new Image(input);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         try {
-            FileInputStream input = new FileInputStream("C:\\Users\\jacka\\IdeaProjects\\Checkers\\images\\whitepiece.png");
+            FileInputStream input = new FileInputStream("images\\whitepiece.png");
             whitePiece = new Image(input);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         try {
-            FileInputStream input = new FileInputStream("C:\\Users\\jacka\\IdeaProjects\\Checkers\\images\\blackking.png");
+            FileInputStream input = new FileInputStream("images\\blackking.png");
             blackKing = new Image(input);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         try {
-            FileInputStream input = new FileInputStream("C:\\Users\\jacka\\IdeaProjects\\Checkers\\images\\whiteking.png");
+            FileInputStream input = new FileInputStream("images\\whiteking.png");
             whiteKing = new Image(input);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
