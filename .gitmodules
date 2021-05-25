@@ -1,0 +1,3 @@
+[submodule "Minimax"]
+	path = Minimax
+	url = https://github.com/0sani/Minimax
