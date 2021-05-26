@@ -97,6 +97,7 @@ public class CheckersBackend extends Board {
                 for (int j = 0; j < 8; j++) {
                     // Checks if black piece (Any)
                     if (grid[i][j] > 0) {
+                        // Normal Moves
                         // Up and left
                         if ((i > 0 && j > 0) && grid[i-1][j-1] == 0)
                             possible.add(new CheckerMove(i,j,i-1,j-1));
@@ -104,7 +105,13 @@ public class CheckersBackend extends Board {
                         if ((i > 0 && j < 7) && grid[i-1][j+1] == 0)
                             possible.add(new CheckerMove(i, j, i-1, j+1));
 
-                        // TODO Add up/left captures
+                        // Capture moves
+                        // Up and left
+                        if ((i > 1 && j > 1) && grid[i-1][j-1] < 0 && grid[i-2][j-2] == 0)
+                            possible.add(new CheckerMove(i,j,i-2,j-2));
+                        // Up and right
+                        if ((i > 1 && j < 6) && grid[i-1][j+1] < 0 && grid[i-2][j+2] == 0)
+                            possible.add(new CheckerMove(i,j,i-2,j-2));
                     }
                     // Adds king moves (Set to just check greater than one because kings might be > 2
                     if (grid[i][j] > 1) {
@@ -115,7 +122,13 @@ public class CheckersBackend extends Board {
                         if ((i < 7 && j < 7) && grid[i+1][j+1] == 0)
                             possible.add(new CheckerMove(i,j,i+1,j+1));
 
-                        // TODO Add down/right captures
+                        // Capture moves
+                        // Down and left
+                        if ((i < 6 && j > 1) && grid[i+1][j-1] < 0 && grid[i+2][j-2] == 0)
+                            possible.add(new CheckerMove(i,j,i+2,j-2));
+                        // Down and right
+                        if ((i < 6 && j < 6) && grid[i+1][j+1] < 0 && grid[i+2][j+2] == 0)
+                            possible.add(new CheckerMove(i,j,i+2,j-2));
                     }
                 }
             }
@@ -124,6 +137,7 @@ public class CheckersBackend extends Board {
                 for (int j = 0; j < 8; j++) {
                     // Checks if black piece (Any)
                     if (grid[i][j] < 0) {
+                        // Normal Moves
                         // Down and left
                         if ((i < 7 && j > 0) && grid[i+1][j-1] == 0)
                             possible.add(new CheckerMove(i,j,i+1,j-1));
@@ -131,10 +145,17 @@ public class CheckersBackend extends Board {
                         if ((i < 7 && j < 7) && grid[i+1][j+1] == 0)
                             possible.add(new CheckerMove(i,j,i+1,j+1));
 
-                        // TODO Add down/right captures
+                        // Capture moves
+                        // Down and left
+                        if ((i < 6 && j > 1) && grid[i+1][j-1] > 0 && grid[i+2][j-2] == 0)
+                            possible.add(new CheckerMove(i,j,i+2,j-2));
+                        // Down and right
+                        if ((i < 6 && j < 6) && grid[i+1][j+1] > 0 && grid[i+2][j+2] == 0)
+                            possible.add(new CheckerMove(i,j,i+2,j-2));
                     }
                     // Adds king moves (Set to just check greater than one because kings might be > 2
                     if (grid[i][j] < -1) {
+                        // Normal moves
                         // Up and left
                         if ((i > 0 && j > 0) && grid[i-1][j-1] == 0)
                             possible.add(new CheckerMove(i,j,i-1,j-1));
@@ -142,7 +163,13 @@ public class CheckersBackend extends Board {
                         if ((i > 0 && j < 7) && grid[i-1][j+1] == 0)
                             possible.add(new CheckerMove(i, j, i-1, j-1));
 
-                        // TODO Add up/left captures
+                        // Capture moves
+                        // Up and left
+                        if ((i > 1 && j > 1) && grid[i-1][j-1] > 0 && grid[i-2][j-2] == 0)
+                            possible.add(new CheckerMove(i,j,i-2,j-2));
+                        // Up and right
+                        if ((i > 1 && j < 6) && grid[i-1][j+1] > 0 && grid[i-2][j+2] == 0)
+                            possible.add(new CheckerMove(i,j,i-2,j-2));
                     }
                 }
             }
