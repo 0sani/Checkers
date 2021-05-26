@@ -19,6 +19,10 @@ public class Checkers extends Application {
 
         Checkerboard board = new Checkerboard();
 
+        CheckersBackend game = new CheckersBackend();
+        game.displayBoard();
+        game.displayMoves();
+
         Scene scene = new Scene(board,Constants.squareSize*Constants.boardSize,Constants.squareSize*Constants.boardSize);
 
         primaryStage.setScene(scene);
