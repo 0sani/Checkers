@@ -1,6 +1,8 @@
-package com.checkers.Minimax.src;
+package com.checkers;
 
 import java.util.ArrayList;
+
+import com.checkers.Move;
 
 public class Minimax {
 
@@ -9,7 +11,7 @@ public class Minimax {
             return board.evaluate();
         }
 
-        if (turn) {
+        if (board.isTurn()) {
             double bestVal = Double.MIN_VALUE;
 
             ArrayList<Move> possible = board.getPossibleMoves();
@@ -19,7 +21,7 @@ public class Minimax {
 
                 copy.makeMove(move);
 
-                double value = minimax(copy, depth-1, false, alpha, beta);
+                double value = minimax(copy, depth-1, copy.isTurn(), alpha, beta);
 
                 bestVal = Math.max(bestVal, value);
 
@@ -39,7 +41,7 @@ public class Minimax {
 
                 copy.makeMove(move);
 
-                double value = minimax(copy,depth-1, true, alpha, beta);
+                double value = minimax(copy,depth-1, copy.isTurn(), alpha, beta);
 
                 bestVal = Math.min(bestVal,value);
 
