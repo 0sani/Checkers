@@ -1,11 +1,15 @@
 package com.checkers;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class Checkers extends Application {
+
+public class Checkers extends Application implements EventHandler<ActionEvent> {
 
 
     @Override
@@ -16,11 +20,29 @@ public class Checkers extends Application {
 
         Checkerboard board = new Checkerboard();
 
-        Board game = new Board();
-        game.displayBoard();
-        game.displayMoves();
-
         Scene scene = new Scene(board,Constants.squareSize*Constants.boardSize,Constants.squareSize*Constants.boardSize);
+
+        // Not too familiar with lambda functions, but IntelliJ suggested to do this
+        AtomicInteger originX = new AtomicInteger();
+        AtomicInteger originY = new AtomicInteger();
+        AtomicInteger endX = new AtomicInteger();
+        AtomicInteger endY = new AtomicInteger();
+
+        scene.setOnMousePressed(mouseEvent -> {
+            originX.set((int) mouseEvent.getX() / 100);
+            originY.set((int) mouseEvent.getY() / 100);
+
+            board.displayPossibleMoves(originX.get(), originY.get());
+        });
+
+        scene.setOnMouseReleased(mouseEvent -> {
+            endX.set((int) mouseEvent.getX() / 100);
+            endY.set((int) mouseEvent.getY() / 100);
+
+
+            board.updateBoard(new Move(originY.get(), originX.get(), endY.get(), endX.get()));
+            board.clearPossibleMoves();
+        });
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -28,5 +50,10 @@ public class Checkers extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    @Override
+    public void handle(ActionEvent actionEvent) {
+
     }
 }

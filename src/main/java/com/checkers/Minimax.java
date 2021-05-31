@@ -2,17 +2,16 @@ package com.checkers;
 
 import java.util.ArrayList;
 
-import com.checkers.Move;
 
 public class Minimax {
 
-    private static double minimax(Board board, int depth, boolean turn, double alpha, double beta) {
+    private static int minimax(Board board, int depth, boolean turn, int alpha, int beta) {
         if (board.getPossibleMoves().size() == 0 || depth == 0) {
             return board.evaluate();
         }
 
         if (board.isTurn()) {
-            double bestVal = Double.MIN_VALUE;
+            int bestVal = Integer.MIN_VALUE;
 
             ArrayList<Move> possible = board.getPossibleMoves();
 
@@ -21,7 +20,7 @@ public class Minimax {
 
                 copy.makeMove(move);
 
-                double value = minimax(copy, depth-1, copy.isTurn(), alpha, beta);
+                int value = minimax(copy, depth-1, copy.isTurn(), alpha, beta);
 
                 bestVal = Math.max(bestVal, value);
 
@@ -31,7 +30,7 @@ public class Minimax {
             }
             return bestVal;
         } else {
-            double bestVal = Double.MAX_VALUE;
+            int bestVal = Integer.MAX_VALUE;
 
             ArrayList<Move> possible = board.getPossibleMoves();
 
@@ -41,7 +40,7 @@ public class Minimax {
 
                 copy.makeMove(move);
 
-                double value = minimax(copy,depth-1, copy.isTurn(), alpha, beta);
+                int value = minimax(copy,depth-1, copy.isTurn(), alpha, beta);
 
                 bestVal = Math.min(bestVal,value);
 
@@ -56,7 +55,7 @@ public class Minimax {
     public static Move findBestMove(Board board) {
         boolean turn = board.isTurn();
 
-        double bestVal = (turn) ? Double.MIN_VALUE : Double.MAX_VALUE;
+        int bestVal = (turn) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 
         // Can change later
         int depth = 6;
@@ -69,7 +68,7 @@ public class Minimax {
         for (Move move : possible) {
             Board copy = new Board(!turn, board.getGrid());
 
-            double moveVal = minimax(copy, depth, !turn, Double.MIN_VALUE, Double.MAX_VALUE);
+            int moveVal = minimax(copy, depth, !turn, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
             if (turn && moveVal > bestVal) {
                 bestVal = moveVal;

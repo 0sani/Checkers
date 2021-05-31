@@ -13,12 +13,18 @@ public class Piece extends ImageView {
     private Image blackPiece, whitePiece, blackKing, whiteKing;
 
 
-    public Piece(boolean isBlack) {
+    public Piece(boolean isBlack, boolean isKing) {
         loadImages();
         if (isBlack) {
-            setImage(blackPiece);
+            if (isKing)
+                setImage(blackKing);
+            else
+                setImage(blackPiece);
         } else {
-            setImage(whitePiece);
+            if (isKing)
+                setImage(whiteKing);
+            else
+                setImage(whitePiece);
         }
         setFitHeight(Constants.squareSize);
         setFitWidth(Constants.squareSize);

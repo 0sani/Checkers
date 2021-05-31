@@ -8,9 +8,14 @@ public class Board {
 
     private int[][] grid = new int[8][8];
     private boolean turn;
+    private boolean hasCaptured;
+    private int lastRowCapture, lastColCapture;
 
     public Board() {
         this.turn = true;
+        this.hasCaptured = false;
+        this.lastRowCapture = -1;
+        this.lastColCapture = -1;
         initBoard();
     }
 
@@ -49,7 +54,7 @@ public class Board {
             for (int square : row) {
                 System.out.print(square + " ");
             }
-            System.out.println("");
+            System.out.println();
         }
     }
 
@@ -75,7 +80,7 @@ public class Board {
         boolean foundBlack = false;
         boolean foundWhite = false;
 
-        for (int row[] : this.grid) {
+        for (int[] row : this.grid) {
             for (int square : row) {
                 if (square > 0) foundBlack = true;
                 if (square < 0) foundWhite = true;
@@ -107,7 +112,7 @@ public class Board {
 
     /**
      * Gets the list of possible moves for the current player
-     * @return
+     * @return ArrayList of legal moves
      */
     public ArrayList<Move> getPossibleMoves() {
 
@@ -119,37 +124,45 @@ public class Board {
                     // Checks black piece moves (Any)
                     if (grid[i][j] > 0) {
                         // Normal Moves
-                        // Up and left
-                        if ((i > 0 && j > 0) && grid[i-1][j-1] == 0)
-                            possible.add(new Move(i,j,i-1,j-1));
-                        // Up and right
-                        if ((i > 0 && j < 7) && grid[i-1][j+1] == 0)
-                            possible.add(new Move(i, j, i-1, j+1));
+                        if (!hasCaptured) {
+                            // Up and left
+                            if ((i > 0 && j > 0) && grid[i - 1][j - 1] == 0)
+                                possible.add(new Move(i, j, i - 1, j - 1));
+                            // Up and right
+                            if ((i > 0 && j < 7) && grid[i - 1][j + 1] == 0)
+                                possible.add(new Move(i, j, i - 1, j + 1));
+                        }
 
                         // Capture moves
-                        // Up and left
-                        if ((i > 1 && j > 1) && grid[i-1][j-1] < 0 && grid[i-2][j-2] == 0)
-                            possible.add(new Move(i,j,i-2,j-2));
-                        // Up and right
-                        if ((i > 1 && j < 6) && grid[i-1][j+1] < 0 && grid[i-2][j+2] == 0)
-                            possible.add(new Move(i,j,i-2,j-2));
+                        if (!hasCaptured || (i == lastRowCapture && j ==  lastColCapture)) {
+                            // Up and left
+                            if ((i > 1 && j > 1) && grid[i - 1][j - 1] < 0 && grid[i - 2][j - 2] == 0)
+                                possible.add(new Move(i, j, i - 2, j - 2));
+                            // Up and right
+                            if ((i > 1 && j < 6) && grid[i - 1][j + 1] < 0 && grid[i - 2][j + 2] == 0)
+                                possible.add(new Move(i, j, i - 2, j + 2));
+                        }
                     }
                     // Adds king moves (Set to just check greater than one because kings might be > 2
                     if (grid[i][j] > 1) {
-                        // Down and left
-                        if ((i < 7 && j > 0) && grid[i+1][j-1] == 0)
-                            possible.add(new Move(i,j,i+1,j-1));
-                        // Down and right
-                        if ((i < 7 && j < 7) && grid[i+1][j+1] == 0)
-                            possible.add(new Move(i,j,i+1,j+1));
+                        if (!hasCaptured) {
+                            // Down and left
+                            if ((i < 7 && j > 0) && grid[i + 1][j - 1] == 0)
+                                possible.add(new Move(i, j, i + 1, j - 1));
+                            // Down and right
+                            if ((i < 7 && j < 7) && grid[i + 1][j + 1] == 0)
+                                possible.add(new Move(i, j, i + 1, j + 1));
+                        }
 
                         // Capture moves
-                        // Down and left
-                        if ((i < 6 && j > 1) && grid[i+1][j-1] < 0 && grid[i+2][j-2] == 0)
-                            possible.add(new Move(i,j,i+2,j-2));
-                        // Down and right
-                        if ((i < 6 && j < 6) && grid[i+1][j+1] < 0 && grid[i+2][j+2] == 0)
-                            possible.add(new Move(i,j,i+2,j-2));
+                        if (!hasCaptured || (i == lastRowCapture && j ==  lastColCapture)) {
+                            // Down and left
+                            if ((i < 6 && j > 1) && grid[i + 1][j - 1] < 0 && grid[i + 2][j - 2] == 0)
+                                possible.add(new Move(i, j, i + 2, j - 2));
+                            // Down and right
+                            if ((i < 6 && j < 6) && grid[i + 1][j + 1] < 0 && grid[i + 2][j + 2] == 0)
+                                possible.add(new Move(i, j, i + 2, j + 2));
+                        }
                     }
                 }
             }
@@ -159,38 +172,47 @@ public class Board {
                     // Checks white piece moves (Any)
                     if (grid[i][j] < 0) {
                         // Normal Moves
-                        // Down and left
-                        if ((i < 7 && j > 0) && grid[i+1][j-1] == 0)
-                            possible.add(new Move(i,j,i+1,j-1));
-                        // Down and right
-                        if ((i < 7 && j < 7) && grid[i+1][j+1] == 0)
-                            possible.add(new Move(i,j,i+1,j+1));
+
+                        if (!hasCaptured) {
+                            // Down and left
+                            if ((i < 7 && j > 0) && grid[i + 1][j - 1] == 0)
+                                possible.add(new Move(i, j, i + 1, j - 1));
+                            // Down and right
+                            if ((i < 7 && j < 7) && grid[i + 1][j + 1] == 0)
+                                possible.add(new Move(i, j, i + 1, j + 1));
+                        }
 
                         // Capture moves
-                        // Down and left
-                        if ((i < 6 && j > 1) && grid[i+1][j-1] > 0 && grid[i+2][j-2] == 0)
-                            possible.add(new Move(i,j,i+2,j-2));
-                        // Down and right
-                        if ((i < 6 && j < 6) && grid[i+1][j+1] > 0 && grid[i+2][j+2] == 0)
-                            possible.add(new Move(i,j,i+2,j-2));
+                        if (!hasCaptured || (i == lastRowCapture && j ==  lastColCapture)) {
+                            // Down and left
+                            if ((i < 6 && j > 1) && grid[i + 1][j - 1] > 0 && grid[i + 2][j - 2] == 0)
+                                possible.add(new Move(i, j, i + 2, j - 2));
+                            // Down and right
+                            if ((i < 6 && j < 6) && grid[i + 1][j + 1] > 0 && grid[i + 2][j + 2] == 0)
+                                possible.add(new Move(i, j, i + 2, j + 2));
+                        }
                     }
                     // Adds king moves (Set to just check greater than one because kings might be > 2
                     if (grid[i][j] < -1) {
                         // Normal moves
-                        // Up and left
-                        if ((i > 0 && j > 0) && grid[i-1][j-1] == 0)
-                            possible.add(new Move(i,j,i-1,j-1));
-                        // Up and right
-                        if ((i > 0 && j < 7) && grid[i-1][j+1] == 0)
-                            possible.add(new Move(i, j, i-1, j-1));
+                        if (!hasCaptured) {
+                            // Up and left
+                            if ((i > 0 && j > 0) && grid[i - 1][j - 1] == 0)
+                                possible.add(new Move(i, j, i - 1, j - 1));
+                            // Up and right
+                            if ((i > 0 && j < 7) && grid[i - 1][j + 1] == 0)
+                                possible.add(new Move(i, j, i - 1, j + 1));
+                        }
 
                         // Capture moves
-                        // Up and left
-                        if ((i > 1 && j > 1) && grid[i-1][j-1] > 0 && grid[i-2][j-2] == 0)
-                            possible.add(new Move(i,j,i-2,j-2));
-                        // Up and right
-                        if ((i > 1 && j < 6) && grid[i-1][j+1] > 0 && grid[i-2][j+2] == 0)
-                            possible.add(new Move(i,j,i-2,j-2));
+                        if (!hasCaptured || (i == lastRowCapture && j ==  lastColCapture)) {
+                            // Up and left
+                            if ((i > 1 && j > 1) && grid[i - 1][j - 1] > 0 && grid[i - 2][j - 2] == 0)
+                                possible.add(new Move(i, j, i - 2, j - 2));
+                            // Up and right
+                            if ((i > 1 && j < 6) && grid[i - 1][j + 1] > 0 && grid[i - 2][j + 2] == 0)
+                                possible.add(new Move(i, j, i - 2, j + 2));
+                        }
                     }
                 }
             }
@@ -211,28 +233,44 @@ public class Board {
 
         int[] move = moveObj.getMove();
 
+        // First two are moves that make a king, other are normal
+        if (turn && move[2] == 0) {
+            grid[move[2]][move[3]] = 2;
+        } else if (!turn && move[2] == 7) {
+            grid[move[2]][move[3]] = -2;
+        } else {
+            grid[move[2]][move[3]] = grid[move[0]][move[1]];
+        }
+
         // Changes start location to nothing
         grid[move[0]][move[1]] = 0;
 
-        // First two are moves that make a king, other are normal
-        if (turn && move[2]==0) {
-            grid[move[2]][move[3]] = 2;
-        } else if (!turn && move[2]==7) {
-            grid[move[2]][move[3]] = -2;
-        } else {
-            grid[move[2]][move[3]] = (turn) ? 1 : -1;
-        }
         // Changes turns
         turn = !turn;
 
         // Removes opponent piece if taken
-        if (Math.abs(move[0]-move[2])==2) {
-            int captureRow = move[0] - (move[0]-move[2])/2;
-            int captureCol = move[1] - (move[1]-move[3])/2;
+        if (Math.abs(move[0] - move[2]) == 2) {
+            int captureRow = move[0] - (move[0] - move[2]) / 2;
+            int captureCol = move[1] - (move[1] - move[3]) / 2;
             grid[captureRow][captureCol] = 0;
+            hasCaptured = true;
+            lastRowCapture = move[2];
+            lastColCapture = move[3];
 
-            // Changes turn back if capture occurred
+            // tentatively sets turn back to check for any additional captures
             turn = !turn;
+            ArrayList<Move> newPossible = getPossibleMoves();
+
+            if (newPossible.size() == 0) {
+                hasCaptured = false;
+                turn = !turn;
+            }
+
         }
+    }
+
+    private boolean isCaptureMove(Move move) {
+        int[] info = move.getMove();
+        return Math.abs(info[2] - info[0]) == 2 || Math.abs(info[3] - info[1]) == 2;
     }
 }
