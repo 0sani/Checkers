@@ -11,6 +11,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class Checkerboard extends GridPane {
@@ -110,6 +111,13 @@ public class Checkerboard extends GridPane {
         }
     }
 
+    public boolean isPlayerTurn() {
+        return board.isTurn();
+    }
 
+    public void playGame() {
+
+
+    }
 
 }

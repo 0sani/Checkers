@@ -1,5 +1,7 @@
 package com.checkers;
 
+import javafx.animation.Animation;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,9 +17,7 @@ public class Checkers extends Application implements EventHandler<ActionEvent> {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Checkers");
-
-
-
+        
         Checkerboard board = new Checkerboard();
 
         Scene scene = new Scene(board,Constants.squareSize*Constants.boardSize,Constants.squareSize*Constants.boardSize);
@@ -28,24 +28,38 @@ public class Checkers extends Application implements EventHandler<ActionEvent> {
         AtomicInteger endX = new AtomicInteger();
         AtomicInteger endY = new AtomicInteger();
 
-        scene.setOnMousePressed(mouseEvent -> {
-            originX.set((int) mouseEvent.getX() / 100);
-            originY.set((int) mouseEvent.getY() / 100);
-
-            board.displayPossibleMoves(originX.get(), originY.get());
-        });
-
-        scene.setOnMouseReleased(mouseEvent -> {
-            endX.set((int) mouseEvent.getX() / 100);
-            endY.set((int) mouseEvent.getY() / 100);
-
-
-            board.updateBoard(new Move(originY.get(), originX.get(), endY.get(), endX.get()));
-            board.clearPossibleMoves();
-        });
-
         primaryStage.setScene(scene);
+
+        new AnimationTimer() {
+
+            public void handle(long currentNanoTime) {
+
+                if (board.board.checkWin() == 0) {
+                    if (board.isPlayerTurn()) {
+                        scene.setOnMousePressed(mouseEvent -> {
+                            originX.set((int) mouseEvent.getX() / 100);
+                            originY.set((int) mouseEvent.getY() / 100);
+                            board.displayPossibleMoves(originX.get(), originY.get());
+                        });
+                        scene.setOnMouseReleased(mouseEvent -> {
+                            endX.set((int) mouseEvent.getX() / 100);
+                            endY.set((int) mouseEvent.getY() / 100);
+
+
+                            board.updateBoard(new Move(originY.get(), originX.get(), endY.get(), endX.get()));
+
+                            board.clearPossibleMoves();
+                        });
+                    } else {
+                        Move bestMove = Minimax.findBestMove(board.board);
+                        board.updateBoard(bestMove);
+                    }
+                }
+            }
+        }.start();
+
         primaryStage.show();
+
     }
 
     public static void main(String[] args) {

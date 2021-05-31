@@ -3,6 +3,9 @@ package com.checkers;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class Board {
 
@@ -56,6 +59,36 @@ public class Board {
             }
             System.out.println();
         }
+    }
+
+    /**
+     * Text implementation for game, for testing purposes only
+     */
+    public void playGame() {
+        Scanner input = new Scanner(System.in);
+        int startRow, startCol, endRow, endCol;
+
+        while (checkWin() == 0) {
+            displayBoard();
+            if (turn) {
+                System.out.println("Enter start row");
+                startRow = input.nextInt();
+                System.out.println("Enter start col");
+                startCol = input.nextInt();
+
+                System.out.println("Enter end row");
+                endRow = input.nextInt();
+                System.out.println("Enter end col");
+                endCol = input.nextInt();
+
+                makeMove(new Move(startRow,startCol,endRow,endCol));
+            } else {
+                Move bestMove = Minimax.findBestMove(this);
+                makeMove(bestMove);
+            }
+            System.out.println("----------------");
+        }
+
     }
 
     /**
@@ -269,8 +302,13 @@ public class Board {
         }
     }
 
-    private boolean isCaptureMove(Move move) {
-        int[] info = move.getMove();
-        return Math.abs(info[2] - info[0]) == 2 || Math.abs(info[3] - info[1]) == 2;
+    /**
+     * Gets the hash of the grid (Which will be used in transposition table
+     * @return hash of grid
+     */
+    public int getHash() {
+        // Note: This will not be an acceptable way if the turns are different
+        return java.util.Arrays.deepHashCode(grid);
     }
+
 }

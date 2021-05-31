@@ -1,11 +1,12 @@
 package com.checkers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Minimax {
 
-    private static int minimax(Board board, int depth, boolean turn, int alpha, int beta) {
+    private static int minimax(Board board, int depth, boolean turn, int alpha, int beta, HashMap<Integer, Integer> transpositions) {
         if (board.getPossibleMoves().size() == 0 || depth == 0) {
             return board.evaluate();
         }
@@ -16,11 +17,19 @@ public class Minimax {
             ArrayList<Move> possible = board.getPossibleMoves();
 
             for (Move move : possible) {
-                Board copy = new Board(true, board.getGrid());
+                Board copy = createCopy(board.getGrid(), true);
 
                 copy.makeMove(move);
 
-                int value = minimax(copy, depth-1, copy.isTurn(), alpha, beta);
+                // returns the stored value if the position has already been evaluated
+                if (transpositions.get(copy.getHash()) !=null) {
+                    return transpositions.get(copy.getHash());
+                }
+
+                int value = minimax(copy, depth-1, copy.isTurn(), alpha, beta, transpositions);
+
+                // adds the evaluation to the table
+                transpositions.put(copy.getHash(), value);
 
                 bestVal = Math.max(bestVal, value);
 
@@ -36,11 +45,19 @@ public class Minimax {
 
             for (Move move : possible) {
 
-                Board copy = new Board(false, board.getGrid());
+                Board copy = createCopy(board.getGrid(), false);
 
                 copy.makeMove(move);
 
-                int value = minimax(copy,depth-1, copy.isTurn(), alpha, beta);
+                // returns the stored value if the position has already been evaluated
+                if (transpositions.get(copy.getHash()) !=null) {
+                    return transpositions.get(copy.getHash());
+                }
+
+                int value = minimax(copy,depth-1, copy.isTurn(), alpha, beta, transpositions);
+
+                // adds the evaluation to the table
+                transpositions.put(copy.getHash(), value);
 
                 bestVal = Math.min(bestVal,value);
 
@@ -57,8 +74,8 @@ public class Minimax {
 
         int bestVal = (turn) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 
-        // Can change later
-        int depth = 6;
+        int depth = Constants.depth;
+        HashMap<Integer, Integer> transpositionTable = new HashMap<Integer, Integer>();
 
         ArrayList<Move> possible = board.getPossibleMoves();
 
@@ -66,9 +83,9 @@ public class Minimax {
         Move bestMove = possible.get(0);
 
         for (Move move : possible) {
-            Board copy = new Board(!turn, board.getGrid());
+            Board copy = createCopy(board.getGrid(), !turn);
 
-            int moveVal = minimax(copy, depth, !turn, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            int moveVal = minimax(copy, depth, !turn, Integer.MIN_VALUE, Integer.MAX_VALUE, transpositionTable);
 
             if (turn && moveVal > bestVal) {
                 bestVal = moveVal;
@@ -80,5 +97,13 @@ public class Minimax {
         }
 
         return bestMove;
+    }
+
+    private static Board createCopy(int[][] grid, boolean turn) {
+        int[][] copyGrid = new int[Constants.boardSize][Constants.boardSize];
+        for (int i = 0; i < Constants.boardSize; i++) {
+            System.arraycopy(grid[i], 0, copyGrid[i], 0, Constants.boardSize);
+        }
+        return new Board(turn, copyGrid);
     }
 }
