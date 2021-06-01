@@ -1,10 +1,7 @@
 package com.checkers;
 
 
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Board {
@@ -120,8 +117,8 @@ public class Board {
             }
         }
 
-        if (!foundBlack) return 1;
-        if (!foundWhite) return -1;
+        if (!foundBlack) return -1;
+        if (!foundWhite) return 1;
         return 0;
     }
 
@@ -130,8 +127,8 @@ public class Board {
      * @return current evaluation
      */
     public int evaluate() {
-        if (checkWin() == 1) return Integer.MAX_VALUE;
-        if (checkWin() == -1) return Integer.MIN_VALUE;
+        if (checkWin() == 1) return 1000;
+        if (checkWin() == -1) return -1000;
 
         int total = 0;
 
@@ -300,6 +297,18 @@ public class Board {
             }
 
         }
+    }
+
+    public int evaluateMove(int[] move, boolean turn) {
+        // can change later
+        int captureBias = 2 * ((turn) ? 1 : -1);
+
+        // adds to the evaluation if a capture took place
+        return evaluate() + captureBias * ((Math.abs(move[0]-move[2]) == 2) ? 1 : 0);
+    }
+
+    public boolean isCaptureMove(Move move) {
+        return Math.abs(move.getMove()[0]-move.getMove()[2])==2;
     }
 
     /**

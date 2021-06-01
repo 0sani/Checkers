@@ -6,9 +6,12 @@ import java.util.HashMap;
 
 public class Minimax {
 
+    public static int searched = 0;
+
     private static int minimax(Board board, int depth, boolean turn, int alpha, int beta, HashMap<Integer, Integer> transpositions) {
+        searched++;
         if (board.getPossibleMoves().size() == 0 || depth == 0) {
-            return board.evaluate();
+            return board.evaluate() * (depth+1);
         }
 
         if (board.isTurn()) {
@@ -56,6 +59,7 @@ public class Minimax {
 
                 int value = minimax(copy,depth-1, copy.isTurn(), alpha, beta, transpositions);
 
+
                 // adds the evaluation to the table
                 transpositions.put(copy.getHash(), value);
 
@@ -73,19 +77,25 @@ public class Minimax {
         boolean turn = board.isTurn();
 
         int bestVal = (turn) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-
         int depth = Constants.depth;
+
         HashMap<Integer, Integer> transpositionTable = new HashMap<Integer, Integer>();
 
-        ArrayList<Move> possible = board.getPossibleMoves();
+        searched = 0;
 
+        ArrayList<Move> possible = board.getPossibleMoves();
         // Just gets the first to ensure something is returned
         Move bestMove = possible.get(0);
 
         for (Move move : possible) {
-            Board copy = createCopy(board.getGrid(), !turn);
+            Board copy = createCopy(board.getGrid(), turn);
+
+            copy.makeMove(move);
 
             int moveVal = minimax(copy, depth, !turn, Integer.MIN_VALUE, Integer.MAX_VALUE, transpositionTable);
+
+//            int moveVal = Negamax.negamax(board, Constants.depth, -1000, 1000, false);
+
 
             if (turn && moveVal > bestVal) {
                 bestVal = moveVal;
@@ -96,10 +106,14 @@ public class Minimax {
             }
         }
 
+        System.out.println("Searched: " + searched);
+        System.out.println("Best Move: " + bestMove);
+        System.out.println("Best Value: " + bestVal);
+        System.out.println();
         return bestMove;
     }
 
-    private static Board createCopy(int[][] grid, boolean turn) {
+    public static Board createCopy(int[][] grid, boolean turn) {
         int[][] copyGrid = new int[Constants.boardSize][Constants.boardSize];
         for (int i = 0; i < Constants.boardSize; i++) {
             System.arraycopy(grid[i], 0, copyGrid[i], 0, Constants.boardSize);

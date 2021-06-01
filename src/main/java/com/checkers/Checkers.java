@@ -1,6 +1,5 @@
 package com.checkers;
 
-import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -17,7 +16,7 @@ public class Checkers extends Application implements EventHandler<ActionEvent> {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Checkers");
-        
+
         Checkerboard board = new Checkerboard();
 
         Scene scene = new Scene(board,Constants.squareSize*Constants.boardSize,Constants.squareSize*Constants.boardSize);
@@ -45,9 +44,8 @@ public class Checkers extends Application implements EventHandler<ActionEvent> {
                             endX.set((int) mouseEvent.getX() / 100);
                             endY.set((int) mouseEvent.getY() / 100);
 
-
+                            // TODO Fix the order board displays stuff in
                             board.updateBoard(new Move(originY.get(), originX.get(), endY.get(), endX.get()));
-
                             board.clearPossibleMoves();
                         });
                     } else {
