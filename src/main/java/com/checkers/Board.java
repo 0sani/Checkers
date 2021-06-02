@@ -46,6 +46,12 @@ public class Board {
         }
     }
 
+    // =================================================================================
+    //
+    // Text-Based methods, mostly for testing purposes
+    //
+    // =================================================================================
+
     /**
      * Basic display, for testing purposes only
      */
@@ -102,6 +108,25 @@ public class Board {
     }
 
     /**
+     * Text interface to display the current game state, used for testing
+     */
+    public void displayState() {
+        System.out.println("---------------");
+        displayBoard();
+        displayMoves();
+        System.out.println("Evaluation: " + evaluate());
+        System.out.println("Win status: " + checkWin());
+        System.out.println("---------------");
+    }
+
+
+    // =================================================================================
+    //
+    // Check win methods
+    //
+    // =================================================================================
+
+    /**
      * Checks for a win
      * @return 1 if black wins, -1 if white wins, 0 otherwise
      */
@@ -129,17 +154,21 @@ public class Board {
         return false;
     }
 
+    // =================================================================================
+    //
+    // Evaluation methods
+    //
+    // =================================================================================
+
     /**
      * Evaluation function for checkers, used strategies from https://www.cs.huji.ac.il/~ai/projects/old/English-Draughts.pdf
      * @return current evaluation
      */
     public double evaluate() {
         if (checkWin() == 1)  {
-            System.out.println("Found win for black");
             return 1000;
         }
         if (checkWin() == -1)  {
-            System.out.println("Found win for white");
             return -1000;
         }
 
@@ -150,7 +179,7 @@ public class Board {
                 for (int col =  0; col < Constants.boardSize; col++) {
                     if (grid[row][col] == 2) total += 10;
                     else if (grid[row][col] == -2) total -= 10;
-                    // weights pieces in oponent's half stronger
+                    // weights pieces in opponent's half stronger
                     else if (grid[row][col] == 1) total += (row < 4) ? 7 : 5;
                     else if (grid[row][col] == -1) total -= (row > 4) ? 7 : 5;
                 }
@@ -188,7 +217,7 @@ public class Board {
      * Checks if the game is in an endgame (only kings left)
      * @return true/false on if the game is in an endgame
      */
-    private boolean isEndgame() {
+    public boolean isEndgame() {
         for (int[] row : this.grid) {
             for (int square : row) {
                 if (Math.abs(square)==1) return false;
@@ -234,6 +263,12 @@ public class Board {
         }
         return total;
     }
+
+    // =================================================================================
+    //
+    // Move finding methods
+    //
+    // =================================================================================
 
     /**
      * Gets the list of possible moves for the current player
@@ -346,6 +381,57 @@ public class Board {
     }
 
     /**
+     * Creates an optimized move list designed to increase the portion of the tree pruned
+     * @return Sorted array for guesses at best moves
+     */
+    public ArrayList<Move> optimizedMoves() {
+        ArrayList<Move> possible = getPossibleMoves();
+        ArrayList<Move> optimized = new ArrayList<>();
+
+        for (int i = possible.size() -1; i > -1; i--) {
+            Move move = possible.get(i);
+            if (isKingingMove(move.getMove())) {
+                optimized.add(move);
+                possible.remove(move);
+            }
+        }
+
+        for (int i = possible.size() -1; i > -1; i--) {
+            Move move = possible.get(i);
+            if (isCaptureMove(move.getMove())) {
+                optimized.add(move);
+                possible.remove(move);
+            }
+        }
+        optimized.addAll(possible);
+
+        return optimized;
+    }
+
+    /**
+     * Helper function to check if a move is a capture
+     * @param move move to be checked
+     * @return whether the move is a capture or not
+     */
+    private boolean isCaptureMove(int[] move) {
+        return Math.abs(move[2]-move[0])==2;
+    }
+
+    /**
+     * Helper function to see if the move is a kinging move
+     * @param move move to be checked
+     * @return whether move kings or not
+     */
+    private boolean isKingingMove(int[] move) {
+        if (turn) {
+            return move[2] == 0;
+        } else {
+            return move[2] == 7;
+        }
+    }
+
+
+    /**
      * Makes a move on the board
      * @param moveObj The move to be made
      */
@@ -394,26 +480,5 @@ public class Board {
         }
     }
 
-    public boolean isCaptureMove(Move move) {
-        return Math.abs(move.getMove()[0]-move.getMove()[2])==2;
-    }
-
-    public void displayState() {
-        System.out.println("---------------");
-        displayBoard();
-        displayMoves();
-        System.out.println("Evaluation: " + evaluate());
-        System.out.println("Win status: " + checkWin());
-        System.out.println("---------------");
-    }
-
-    /**
-     * Gets the hash of the grid (Which will be used in transposition table
-     * @return hash of grid
-     */
-    public int getHash() {
-        // Note: This will not be an acceptable way if the turns are different
-        return java.util.Arrays.deepHashCode(grid);
-    }
 
 }

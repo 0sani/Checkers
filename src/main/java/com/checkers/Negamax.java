@@ -21,7 +21,7 @@ public class Negamax {
     public static double negamax(Board board, int depth, double alpha, double beta, boolean turn) {
         Minimax.searched++;
 
-        if (transpositionTable.get(board.getHash()) != null) return  transpositionTable.get(board.getHash());
+        if (transpositionTable.get(board.hashCode()) != null) return  transpositionTable.get(board.hashCode());
 
         if (depth == 0 || board.getPossibleMoves().size() == 0)
             return board.evaluate() * ((turn) ? 1 : -1);
@@ -37,7 +37,7 @@ public class Negamax {
 
             value = Math.max(value, -negamax(copy,depth-1,-beta,-alpha,!turn));
 
-            transpositionTable.put(copy.getHash(), value);
+            transpositionTable.put(copy.hashCode(), value);
 
             alpha = Math.max(alpha, value);
 
