@@ -79,7 +79,8 @@ public class Minimax {
         boolean turn = board.isTurn();
 
         double bestVal = (turn) ? -1000000 : 1000000;
-        int depth = Constants.depth * (board.isEndgame() ? 3 : 1);
+        //searches deeper on endgames
+        int depth = (int) (Constants.depth * ((board.isEndgame()) ? 1.3  : 1));
 
         HashMap<Integer, Double> transpositionTable = new HashMap<>();
 

@@ -132,7 +132,7 @@ public class Board {
      */
     public int checkWin() {
         if (!foundBlack()) return -1;
-        if (!foundWhite()) return -1;
+        if (!foundWhite()) return 1;
         return 0;
     }
 
@@ -388,7 +388,7 @@ public class Board {
         ArrayList<Move> possible = getPossibleMoves();
         ArrayList<Move> optimized = new ArrayList<>();
 
-        for (int i = possible.size() -1; i > -1; i--) {
+        for (int i = possible.size() - 1; i > -1; i--) {
             Move move = possible.get(i);
             if (isKingingMove(move.getMove())) {
                 optimized.add(move);
@@ -396,7 +396,7 @@ public class Board {
             }
         }
 
-        for (int i = possible.size() -1; i > -1; i--) {
+        for (int i = possible.size() - 1; i > -1; i--) {
             Move move = possible.get(i);
             if (isCaptureMove(move.getMove())) {
                 optimized.add(move);

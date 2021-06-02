@@ -52,6 +52,11 @@ public class Checkers extends Application implements EventHandler<ActionEvent> {
                         Move bestMove = Minimax.findBestMove(board.board);
                         board.updateBoard(bestMove);
                     }
+                } else {
+                    String winner = (board.board.checkWin() == 1) ? "Black" : "White";
+                    String winString = winner + " Wins!";
+                    AlertBox.display("Winning Screen", winString);
+                    this.stop();
                 }
             }
         }.start();

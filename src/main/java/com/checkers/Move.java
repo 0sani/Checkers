@@ -17,7 +17,7 @@ public class Move {
     public int[] getMove() {
         return new int[] {startRow,startCol,endRow,endCol};
     }
-    
+
     public boolean isEqual(Move other) {
         int[] otherMove = other.getMove();
         return (otherMove[0]==this.startRow && otherMove[1]==this.startCol &&

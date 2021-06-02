@@ -29,7 +29,9 @@ public class Checkerboard extends GridPane {
 
             add(rect, x, y);
         }
-        this.board = new Board();
+//        this.board = new Board();
+
+        this.board = new Board(true, Constants.BoardExamples.twoKingsvsOneKing);
         displayBoard();
     }
 
