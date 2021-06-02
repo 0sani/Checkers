@@ -8,8 +8,6 @@ import java.io.FileNotFoundException;
 
 public class Piece extends ImageView {
 
-    private boolean isBlack;
-    private boolean isKing;
     private Image blackPiece, whitePiece, blackKing, whiteKing;
 
 

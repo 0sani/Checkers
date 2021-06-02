@@ -2,22 +2,22 @@ package com.checkers;
 
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class Checkerboard extends GridPane {
 
+    // I'm aware this is poor practice
     public Board board;
-    
+
+    /**
+     * Creates a new checkerboard object
+     */
     public Checkerboard(){
 
         for (int i = 0; i < Math.pow(Constants.boardSize,2); i++) {
@@ -33,20 +33,9 @@ public class Checkerboard extends GridPane {
         displayBoard();
     }
 
-    private void initBoard() {
-        for (int i = 0; i < Constants.boardSize; i++) {
-            for (int j = 0; j< Constants.boardSize; j++) {
-                if (i%2==0 ^ j%2==0) {
-                    if (i < Constants.boardSize/2 - 1) {
-                        add(new Piece(false, false), j,i);
-                    } else if (i > Constants.boardSize/2) {
-                        add(new Piece(true, false), j,i);
-                    }
-                }
-            }
-        }
-    }
-    
+    /**
+     * Displays the board to the GUI
+     */
     public void displayBoard() {
         int[][] grid = board.getGrid();
         for (int i = 0; i < Constants.boardSize; i++) {
@@ -66,6 +55,9 @@ public class Checkerboard extends GridPane {
         }
     }
 
+    /**
+     * Clears the board of all Piece Objects
+     */
     public void clearBoard() {
         ObservableList<Node> children = getChildren();
         for (int i = children.size()-1; i > -1; i--) {
@@ -75,12 +67,21 @@ public class Checkerboard extends GridPane {
         }
     }
 
+    /**
+     * Updates the GUI when a move is made
+     * @param move the new move
+     */
     public void updateBoard(Move move) {
         board.makeMove(move);
         clearBoard();
         displayBoard();
     }
 
+    /**
+     * Displays the possible moves for a given starting square on the screen
+     * @param startX starting X position of checker
+     * @param startY starting Y positon of checker
+     */
     public void displayPossibleMoves(int startX, int startY) {
         ArrayList<Move> allPossible = board.getPossibleMoves();
         for (Move move : allPossible) {
@@ -101,6 +102,9 @@ public class Checkerboard extends GridPane {
         }
     }
 
+    /**
+     * Clears the board of the circles created in the displayPossibleMoves function
+     */
     public void clearPossibleMoves() {
         ObservableList<Node> children = getChildren();
         for (int i = children.size()-1; i > -1; i--) {
@@ -111,13 +115,12 @@ public class Checkerboard extends GridPane {
         }
     }
 
+    /**
+     * Getter function for the Board object's state
+     * @return which turn it is
+     */
     public boolean isPlayerTurn() {
         return board.isTurn();
-    }
-
-    public void playGame() {
-
-
     }
 
 }
