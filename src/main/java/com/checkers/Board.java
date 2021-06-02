@@ -106,35 +106,130 @@ public class Board {
      * @return 1 if black wins, -1 if white wins, 0 otherwise
      */
     public int checkWin() {
-
-        boolean foundBlack = false;
-        boolean foundWhite = false;
-
-        for (int[] row : this.grid) {
-            for (int square : row) {
-                if (square > 0) foundBlack = true;
-                if (square < 0) foundWhite = true;
-            }
-        }
-
-        if (!foundBlack) return -1;
-        if (!foundWhite) return 1;
+        if (!foundBlack()) return -1;
+        if (!foundWhite()) return -1;
         return 0;
     }
 
+    private boolean foundBlack() {
+        for (int[] row : this.grid) {
+            for (int square : row) {
+                if (square > 0) return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean foundWhite() {
+        for (int[] row : this.grid) {
+            for (int square : row) {
+                if (square < 0) return true;
+            }
+        }
+        return false;
+    }
+
     /**
-     * Evaluation function for checkers
+     * Evaluation function for checkers, used strategies from https://www.cs.huji.ac.il/~ai/projects/old/English-Draughts.pdf
      * @return current evaluation
      */
-    public int evaluate() {
-        if (checkWin() == 1) return 1000;
-        if (checkWin() == -1) return -1000;
+    public double evaluate() {
+        if (checkWin() == 1)  {
+            System.out.println("Found win for black");
+            return 1000;
+        }
+        if (checkWin() == -1)  {
+            System.out.println("Found win for white");
+            return -1000;
+        }
 
-        int total = 0;
+        double total = 0;
+
+        if (!isEndgame()) {
+            for (int row = 0; row < Constants.boardSize; row++) {
+                for (int col =  0; col < Constants.boardSize; col++) {
+                    if (grid[row][col] == 2) total += 10;
+                    else if (grid[row][col] == -2) total -= 10;
+                    // weights pieces in oponent's half stronger
+                    else if (grid[row][col] == 1) total += (row < 4) ? 7 : 5;
+                    else if (grid[row][col] == -1) total -= (row > 4) ? 7 : 5;
+                }
+            }
+            // Weights positions with fewer pieces higher, as humans are more likely to play incorrectly
+            return total / countPieces();
+        } else {
+
+            int dKings = 0;
+            for (int row = 0; row < Constants.boardSize; row++) {
+                for (int col = 0; col < Constants.boardSize; col++) {
+                    // Can accurately divide because we know that there are only kings left
+                    dKings += grid[row][col]/2;
+                }
+            }
+
+            int totalSumDist = 0;
+
+            for (int row = 0; row < Constants.boardSize; row++) {
+                for (int col = 0; col < Constants.boardSize; col++) {
+                    totalSumDist += sumDistancePiece(row, col);
+                }
+            }
+
+            // Makes it undesirable to chase if down material
+            if (dKings < 0) {
+                totalSumDist = -totalSumDist;
+            }
+
+            return totalSumDist;
+        }
+    }
+
+    /**
+     * Checks if the game is in an endgame (only kings left)
+     * @return true/false on if the game is in an endgame
+     */
+    private boolean isEndgame() {
+        for (int[] row : this.grid) {
+            for (int square : row) {
+                if (Math.abs(square)==1) return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Counts the number of pieces on the board
+     * @return number of pieces on the board
+     */
+    private int countPieces() {
+        int count = 0;
 
         for (int[] row : grid) {
             for (int square : row) {
-                total += square;
+                if (square != 0) count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Gets the sum of distances from a piece to all opponents, used for the evaluation function
+     * @param row row of square to get distances from
+     * @param col col of square to get distances from
+     * @return sum of distances from other pieces
+     */
+    private int sumDistancePiece(int row, int col) {
+        int total = 0;
+        for (int i = 0; i < Constants.boardSize; i++) {
+            for (int j = 0; j < Constants.boardSize; j++) {
+                if (i != row || j != col) {
+                    int dist = Math.max(Math.abs(row - i), Math.abs(col - j));
+                    if (grid[row][col] > 0) {
+                        if (grid[i][j] < 0) total += dist;
+                    } else if (grid[row][col] < 0) {
+                        if (grid[i][j] > 0) total += dist;
+                    }
+                }
             }
         }
         return total;
@@ -299,16 +394,17 @@ public class Board {
         }
     }
 
-    public int evaluateMove(int[] move, boolean turn) {
-        // can change later
-        int captureBias = 2 * ((turn) ? 1 : -1);
-
-        // adds to the evaluation if a capture took place
-        return evaluate() + captureBias * ((Math.abs(move[0]-move[2]) == 2) ? 1 : 0);
-    }
-
     public boolean isCaptureMove(Move move) {
         return Math.abs(move.getMove()[0]-move.getMove()[2])==2;
+    }
+
+    public void displayState() {
+        System.out.println("---------------");
+        displayBoard();
+        displayMoves();
+        System.out.println("Evaluation: " + evaluate());
+        System.out.println("Win status: " + checkWin());
+        System.out.println("---------------");
     }
 
     /**

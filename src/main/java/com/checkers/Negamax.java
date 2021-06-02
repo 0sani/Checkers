@@ -7,7 +7,7 @@ import static com.checkers.Minimax.createCopy;
 
 public class Negamax {
 
-    public static HashMap<Integer, Integer> transpositionTable = new HashMap<>();
+    public static HashMap<Integer, Double> transpositionTable = new HashMap<>();
 
     /**
      * Recursive function for the Negamax function, a similar algorithm to minimax for zero-sum games
@@ -18,8 +18,8 @@ public class Negamax {
      * @param turn Which turn the game is on
      * @return
      */
-    public static int negamax(Board board, int depth, int alpha, int beta, boolean turn) {
-
+    public static double negamax(Board board, int depth, double alpha, double beta, boolean turn) {
+        Minimax.searched++;
 
         if (transpositionTable.get(board.getHash()) != null) return  transpositionTable.get(board.getHash());
 
@@ -28,7 +28,7 @@ public class Negamax {
 
         ArrayList<Move> possible = board.getPossibleMoves();
 
-        int value = -1000;
+        double value = -1000;
 
         for (Move move : possible) {
 
