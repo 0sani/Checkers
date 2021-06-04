@@ -1,7 +1,9 @@
 package com.checkers;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 
 public class Minimax {
@@ -10,7 +12,7 @@ public class Minimax {
     public static int searched = 0;
     public static int transpositionsFound = 0;
 
-    private static double minimax(Board board, int depth, boolean turn, double alpha, double beta, HashMap<Integer, Double> transpositions) {
+    public static double minimax(Board board, int depth, boolean turn, double alpha, double beta, HashMap<Integer, Double> transpositions) {
         searched++;
         if (board.getPossibleMoves().size() == 0 || depth == 0) {
             return board.evaluate() * (depth+1);
@@ -90,19 +92,21 @@ public class Minimax {
         // Just gets the first to ensure something is returned
         Move bestMove = possible.get(0);
 
-        for (Move move : possible) {
+        Hashtable<Move, Double> candidates = new Hashtable<>();
+        possible.parallelStream().forEach(move -> {
             Board copy = createCopy(board.getGrid(), turn);
-
             copy.makeMove(move);
-
-
             double moveVal = minimax(copy, depth, copy.isTurn(), -100000, 100000, transpositionTable);
+            candidates.put(move, moveVal);
+        });
 
-            if (turn && moveVal > bestVal) {
-                bestVal = moveVal;
+        for (Move move : possible) {
+            double value = candidates.get(move);
+            if (turn && value > bestVal) {
+                bestVal = value;
                 bestMove = move;
-            } else if (!turn && moveVal < bestVal) {
-                bestVal = moveVal;
+            } else if (!turn && value < bestVal) {
+                bestVal = value;
                 bestMove = move;
             }
         }
