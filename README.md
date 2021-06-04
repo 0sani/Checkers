@@ -1,6 +1,7 @@
 # Checkers
 
-GUI checkers program which implements Minimax for a computer oponent
+GUI checkers program which implements Minimax for a computer oponent.  
+Unfortunately, this computer opponent is quite bad, and needs to be improved.  
 
 Note: the program may stop responding as it searches for moves, but it will eventually return  
 A possible solution for this in the future would be using iterative deepening that way the search can stop at any time
