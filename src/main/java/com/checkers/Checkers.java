@@ -34,6 +34,12 @@ public class Checkers extends Application implements EventHandler<ActionEvent> {
             public void handle(long currentNanoTime) {
 
                 if (board.board.checkWin() == 0) {
+
+                    if (board.board.getPossibleMoves().size() == 0) {
+                        AlertBox.display("Game over", "Draw!");
+                        this.stop();
+                    }
+
                     if (board.isPlayerTurn()) {
                         scene.setOnMousePressed(mouseEvent -> {
                             originX.set((int) mouseEvent.getX() / 100);
@@ -55,7 +61,7 @@ public class Checkers extends Application implements EventHandler<ActionEvent> {
                 } else {
                     String winner = (board.board.checkWin() == 1) ? "Black" : "White";
                     String winString = winner + " Wins!";
-                    AlertBox.display("Winning Screen", winString);
+                    AlertBox.display("Game over", winString);
                     this.stop();
                 }
             }
